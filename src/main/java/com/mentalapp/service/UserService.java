@@ -6,9 +6,8 @@ import com.mentalapp.dto.AuthResponse;
 import com.mentalapp.dto.UserProfileResponse;
 import com.mentalapp.dto.UserUpdateRequest;
 import com.mentalapp.dto.UserLoginRequest;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService extends UserDetailsService {
+public interface UserService {
 
     // Registration and Authentication
     User registerUser(UserRegistrationRequest request);

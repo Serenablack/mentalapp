@@ -1,12 +1,18 @@
 package com.mentalapp.service.implementations;
 
-
 import com.mentalapp.dto.*;
 import com.mentalapp.mapper.UserMapper;
 import com.mentalapp.model.User;
 import com.mentalapp.repository.UserRepository;
 import com.mentalapp.security.JwtUtil;
 import com.mentalapp.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -43,7 +49,7 @@ public class UserServiceImpl implements UserService {
         // Check if user already exists with this email
         if (userRepository.existsByEmail(email)) {
             return userRepository.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         }
 
         // Create new OAuth user
@@ -64,8 +70,10 @@ public class UserServiceImpl implements UserService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsernameOrEmail(), request.getPassword()));
 
-        User user = userRepository.findByUsernameOrEmail(request.getUsernameOrEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        // Try to find user by email first, then by username if not found
+        User user = userRepository.findByEmail(request.getUsernameOrEmail())
+                                  .or(() -> userRepository.findByUsername(request.getUsernameOrEmail()))
+                                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         user.setLastLoginAt(LocalDateTime.now());
         user.resetFailedLoginAttempts();
@@ -85,7 +93,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return userMapper.toProfileResponse(user);
     }
@@ -94,7 +102,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserProfileResponse updateUserProfile(Long userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         userMapper.updateEntity(user, request);
         user = userRepository.save(user);
@@ -106,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void verifyEmail(String token) {
         User user = userRepository.findByEmailVerificationToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid verification token"));
+                                  .orElseThrow(() -> new IllegalArgumentException("Invalid verification token"));
 
         if (user.getEmailVerificationExpiresAt().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Verification token has expired");
@@ -122,7 +130,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void requestPasswordReset(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String token = UUID.randomUUID().toString();
         user.setPasswordResetToken(token);
@@ -136,7 +144,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void resetPassword(String token, String newPassword) {
         User user = userRepository.findByPasswordResetToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid reset token"));
+                                  .orElseThrow(() -> new IllegalArgumentException("Invalid reset token"));
 
         if (user.getPasswordResetExpiresAt().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Reset token has expired");
@@ -148,9 +156,5 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        return userRepository.findByUsernameOrEmail(usernameOrEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
+
 }
