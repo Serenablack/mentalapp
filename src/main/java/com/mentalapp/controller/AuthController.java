@@ -49,17 +49,26 @@ public class AuthController {
      * User login endpoint
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> loginUser(@Valid @RequestBody UserLoginRequest request) {
-        log.info("Login request received for user: {}", request.getUsernameOrEmail());
-
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody UserLoginRequest req) {
         try {
-            AuthResponse response = userService.authenticateUser(request);
-            log.info("User logged in successfully: {}", request.getUsernameOrEmail());
+            AuthResponse response = userService.authenticateUser(req);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Login failed for user: {}", request.getUsernameOrEmail(), e);
+            AuthResponse errorResponse = new AuthResponse();
+            errorResponse.setMessage("Login failed: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
 
-            return ResponseEntity.badRequest().body(new AuthResponse("Login failed: " + e.getMessage()));
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> googleAuth(@Valid @RequestBody GoogleAuthRequest req) {
+        try {
+            AuthResponse response = userService.googleAuth(req);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            AuthResponse errorResponse = new AuthResponse();
+            errorResponse.setMessage("Google authentication failed: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 

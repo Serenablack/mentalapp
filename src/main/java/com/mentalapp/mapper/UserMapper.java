@@ -18,8 +18,8 @@ public class UserMapper {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPasswordHash(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+//        user.setFirstName(request.getFirstName());
+//        user.setLastName(request.getLastName());
         // Note: other fields will be set by service
         return user;
     }
@@ -33,8 +33,8 @@ public class UserMapper {
         response.setId(user.getId());
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
-        response.setFirstName(user.getFirstName());
-        response.setLastName(user.getLastName());
+//        response.setFirstName(user.getFirstName());
+//        response.setLastName(user.getLastName());
         response.setIsEmailVerified(user.getIsEmailVerified());
         // Note: oauthProvider field doesn't exist in User model
         response.setCreatedAt(user.getCreatedAt());
@@ -47,12 +47,12 @@ public class UserMapper {
             return;
         }
 
-        if (request.getFirstName() != null) {
-            entity.setFirstName(request.getFirstName());
-        }
-        if (request.getLastName() != null) {
-            entity.setLastName(request.getLastName());
-        }
+//        if (request.getFirstName() != null) {
+//            entity.setFirstName(request.getFirstName());
+//        }
+//        if (request.getLastName() != null) {
+//            entity.setLastName(request.getLastName());
+//        }
         if (request.getEmail() != null) {
             entity.setEmail(request.getEmail());
         }

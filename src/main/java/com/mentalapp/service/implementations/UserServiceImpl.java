@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         // Check if user already exists with this email
         if (userRepository.existsByEmail(email)) {
             return userRepository.findByEmail(email)
-                                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         }
 
         // Create new OAuth user
@@ -72,8 +72,8 @@ public class UserServiceImpl implements UserService {
 
         // Try to find user by email first, then by username if not found
         User user = userRepository.findByEmail(request.getUsernameOrEmail())
-                                  .or(() -> userRepository.findByUsername(request.getUsernameOrEmail()))
-                                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .or(() -> userRepository.findByUsername(request.getUsernameOrEmail()))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         user.setLastLoginAt(LocalDateTime.now());
         user.resetFailedLoginAttempts();
@@ -90,10 +90,53 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
+    public AuthResponse googleAuth(GoogleAuthRequest request) {
+        try {
+            // For now, we'll implement a simple Google token validation
+            // In a real implementation, you would validate the Google ID token
+            // and extract user information from it
+
+            // Create or find user based on Google token
+            // This is a simplified implementation - in production you'd validate the token
+            User user = userRepository.findByEmail(request.getToken()) // Using token as email for now
+                    .orElseGet(() -> {
+                        User newUser = new User();
+                        newUser.setEmail(request.getToken()); // In real implementation, extract from Google token
+                        newUser.setUsername("google_" + System.currentTimeMillis());
+                        newUser.setPasswordHash(""); // No password for OAuth users
+                        newUser.setIsEmailVerified(true);
+                        newUser.setFailedLoginAttempts(0);
+                        newUser.setExternalId(request.getToken()); // Store Google ID
+                        newUser.setAuthProvider("GOOGLE");
+                        return userRepository.save(newUser);
+                    });
+
+            // Update last login
+            user.setLastLoginAt(LocalDateTime.now());
+            userRepository.save(user);
+
+            // Generate JWT token
+            String token = jwtUtil.generateToken(user);
+
+            // Create response
+            AuthResponse response = new AuthResponse();
+            response.setAccessToken(token);
+            response.setTokenType("Bearer");
+            response.setExpiresIn(86400L); // 24 hours
+            response.setMessage("Google authentication successful");
+
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException("Google authentication failed: " + e.getMessage());
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
-                                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return userMapper.toProfileResponse(user);
     }
@@ -102,7 +145,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserProfileResponse updateUserProfile(Long userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
-                                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         userMapper.updateEntity(user, request);
         user = userRepository.save(user);
@@ -114,7 +157,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void verifyEmail(String token) {
         User user = userRepository.findByEmailVerificationToken(token)
-                                  .orElseThrow(() -> new IllegalArgumentException("Invalid verification token"));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid verification token"));
 
         if (user.getEmailVerificationExpiresAt().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Verification token has expired");
@@ -130,7 +173,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void requestPasswordReset(String email) {
         User user = userRepository.findByEmail(email)
-                                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String token = UUID.randomUUID().toString();
         user.setPasswordResetToken(token);
@@ -144,7 +187,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void resetPassword(String token, String newPassword) {
         User user = userRepository.findByPasswordResetToken(token)
-                                  .orElseThrow(() -> new IllegalArgumentException("Invalid reset token"));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid reset token"));
 
         if (user.getPasswordResetExpiresAt().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Reset token has expired");
@@ -155,6 +198,5 @@ public class UserServiceImpl implements UserService {
         user.setPasswordResetExpiresAt(null);
         userRepository.save(user);
     }
-
 
 }

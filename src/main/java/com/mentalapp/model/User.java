@@ -73,6 +73,12 @@ public class User implements UserDetails {
     @Column(name = "is_email_verified", nullable = false)
     private Boolean isEmailVerified;
 
+    @Column(name = "external_id", length = 255)
+    private String externalId;
+
+    @Column(name = "auth_provider", length = 50)
+    private String authProvider;
+
     public String getFullName() {
         if (firstName != null && lastName != null) {
             return firstName + " " + lastName;

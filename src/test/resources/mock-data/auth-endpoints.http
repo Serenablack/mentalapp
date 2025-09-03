@@ -1,0 +1,383 @@
+### Mental Health App - Authentication Endpoints Testing
+### This file can be used with IntelliJ IDEA HTTP Client, VS Code REST Client, or similar tools
+
+### Base URL - Update this according to your environment
+@baseUrl = http://localhost:8080
+@authUrl = {{baseUrl}}/api/auth
+
+### Test User Registration
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123",
+  "firstName": "Test",
+  "lastName": "User"
+}
+
+### Test User Registration - Invalid Data (Missing Required Fields)
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "test",
+  "email": "invalid-email",
+  "password": "123"
+}
+
+### Test User Registration - Duplicate Username
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "another@example.com",
+  "password": "password123",
+  "firstName": "Another",
+  "lastName": "User"
+}
+
+### Test User Registration - Duplicate Email
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "anotheruser",
+  "email": "test@example.com",
+  "password": "password123",
+  "firstName": "Another",
+  "lastName": "User"
+}
+
+### Test User Login - Valid Credentials
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "testuser",
+  "password": "password123"
+}
+
+### Test User Login - Valid Email
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "test@example.com",
+  "password": "password123"
+}
+
+### Test User Login - Invalid Password
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "testuser",
+  "password": "wrongpassword"
+}
+
+### Test User Login - Non-existent User
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "nonexistent",
+  "password": "password123"
+}
+
+### Test Get Current User - Without Token (Should fail)
+GET {{authUrl}}/me
+
+### Test Get Current User - With Valid Token
+GET {{authUrl}}/me
+Authorization: Bearer {{authToken}}
+
+### Test Logout
+POST {{authUrl}}/logout
+Authorization: Bearer {{authToken}}
+
+### Test Health Check
+GET {{authUrl}}/health
+
+### Test CORS Preflight
+OPTIONS {{authUrl}}/register
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: Content-Type
+Origin: http://localhost:4200
+
+### Test Registration with Different User Types
+### Admin User
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "email": "admin@example.com",
+  "password": "admin123",
+  "firstName": "Admin",
+  "lastName": "User"
+}
+
+### Regular User
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "email": "john.doe@example.com",
+  "password": "securepass456",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+### Test Edge Cases
+### Very Long Username
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "thisisareallylongusernamewithmorethanfiftycharacterswhichshouldfailvalidation",
+  "email": "long@example.com",
+  "password": "password123",
+  "firstName": "Long",
+  "lastName": "Username"
+}
+
+### Very Short Password
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "shortpass",
+  "email": "short@example.com",
+  "password": "123",
+  "firstName": "Short",
+  "lastName": "Password"
+}
+
+### Invalid Email Format
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "invalidemail",
+  "email": "notanemail",
+  "password": "password123",
+  "firstName": "Invalid",
+  "lastName": "Email"
+}
+
+### Empty Fields
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "",
+  "email": "",
+  "password": "",
+  "firstName": "",
+  "lastName": ""
+}
+
+### Test Login Edge Cases
+### Empty Credentials
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "",
+  "password": ""
+}
+
+### SQL Injection Attempt
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "'; DROP TABLE users; --",
+  "password": "password123"
+}
+
+### XSS Attempt
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "<script>alert('xss')</script>",
+  "password": "password123"
+}
+
+### Performance Test - Multiple Rapid Requests
+### This can be used to test rate limiting and performance
+# @name rapidLogin1
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "testuser",
+  "password": "password123"
+}
+
+# @name rapidLogin2
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "testuser",
+  "password": "password123"
+}
+
+# @name rapidLogin3
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "testuser",
+  "password": "password123"
+}
+
+### Test with Different Content Types
+### XML Content Type (Should fail gracefully)
+POST {{authUrl}}/register
+Content-Type: application/xml
+
+<user>
+  <username>xmluser</username>
+  <email>xml@example.com</email>
+  <password>password123</password>
+  <firstName>XML</firstName>
+  <lastName>User</lastName>
+</user>
+
+### Form Data (Should fail gracefully)
+POST {{authUrl}}/register
+Content-Type: application/x-www-form-urlencoded
+
+username=formuser&email=form@example.com&password=password123&firstName=Form&lastName=User
+
+### Test Authentication Flow
+### 1. Register a new user
+# @name registerUser
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "flowtest",
+  "email": "flow@example.com",
+  "password": "password123",
+  "firstName": "Flow",
+  "lastName": "Test"
+}
+
+### 2. Extract token from registration response
+# @name extractToken
+POST {{baseUrl}}/extract-token
+Content-Type: application/json
+
+{{registerUser.response.body}}
+
+### 3. Use token to access protected endpoint
+GET {{authUrl}}/me
+Authorization: Bearer {{extractToken.response.body.token}}
+
+### 4. Login with the same user
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "flowtest",
+  "password": "password123"
+}
+
+### 5. Logout
+POST {{authUrl}}/logout
+Authorization: Bearer {{authToken}}
+
+### Test Error Handling
+### Malformed JSON
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "malformed",
+  "email": "malformed@example.com",
+  "password": "password123",
+  "firstName": "Malformed",
+  "lastName": "User",
+  "extraField": "this should be ignored"
+}
+
+### Missing Content-Type Header
+POST {{authUrl}}/register
+
+{
+  "username": "noheader",
+  "email": "noheader@example.com",
+  "password": "password123",
+  "firstName": "No",
+  "lastName": "Header"
+}
+
+### Test Security Headers
+### Check if security headers are properly set
+GET {{authUrl}}/health
+
+### Test with Different HTTP Methods
+### PUT request to login endpoint (Should fail)
+PUT {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "testuser",
+  "password": "password123"
+}
+
+### DELETE request to register endpoint (Should fail)
+DELETE {{authUrl}}/register
+
+### PATCH request to me endpoint (Should fail)
+PATCH {{authUrl}}/me
+
+### Test Response Headers
+### Check CORS headers
+GET {{authUrl}}/health
+Origin: http://localhost:4200
+
+### Check authentication headers
+GET {{authUrl}}/me
+Authorization: Bearer {{authToken}}
+
+### Test with Different User Agents
+### Mobile User Agent
+POST {{authUrl}}/login
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15
+
+{
+  "usernameOrEmail": "testuser",
+  "password": "password123"
+}
+
+### Desktop User Agent
+POST {{authUrl}}/login
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+{
+  "usernameOrEmail": "testuser",
+  "password": "password123"
+}
+
+### Bot User Agent
+POST {{authUrl}}/login
+Content-Type: application/json
+User-Agent: Googlebot/2.1
+
+{
+  "usernameOrEmail": "testuser",
+  "password": "password123"
+}
+
+

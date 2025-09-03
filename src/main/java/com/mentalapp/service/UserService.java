@@ -6,6 +6,7 @@ import com.mentalapp.dto.AuthResponse;
 import com.mentalapp.dto.UserProfileResponse;
 import com.mentalapp.dto.UserUpdateRequest;
 import com.mentalapp.dto.UserLoginRequest;
+import com.mentalapp.dto.GoogleAuthRequest;
 
 public interface UserService {
 
@@ -15,6 +16,8 @@ public interface UserService {
     User registerOAuthUser(String email, String name, String provider);
 
     AuthResponse authenticateUser(UserLoginRequest request);
+
+    AuthResponse googleAuth(GoogleAuthRequest request);
 
     // User Profile Management
     UserProfileResponse getUserProfile(Long userId);
