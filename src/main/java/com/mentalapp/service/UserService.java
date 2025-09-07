@@ -7,28 +7,28 @@ import com.mentalapp.dto.UserProfileResponse;
 import com.mentalapp.dto.UserUpdateRequest;
 import com.mentalapp.dto.UserLoginRequest;
 import com.mentalapp.dto.GoogleAuthRequest;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
     // Registration and Authentication
     User registerUser(UserRegistrationRequest request);
 
-    User registerOAuthUser(String email, String name, String provider);
 
-    AuthResponse authenticateUser(UserLoginRequest request);
+    ResponseEntity<?> authenticateUser(UserLoginRequest request);
 
-    AuthResponse googleAuth(GoogleAuthRequest request);
+//    AuthResponse googleAuth(GoogleAuthRequest request);
 
-    // User Profile Management
-    UserProfileResponse getUserProfile(Long userId);
-
-    UserProfileResponse updateUserProfile(Long userId, UserUpdateRequest request);
+//    User registerOAuthUser(String email, String name, String provider);
+//    // User Profile Management
+//    UserProfileResponse getUserProfile(Long userId);
+//
+//    UserProfileResponse updateUserProfile(Long userId, UserUpdateRequest request);
 
     // Password Management
-    void requestPasswordReset(String email);
+//    void requestPasswordReset(String email);
+//
+//    void resetPassword(String token, String newPassword);
 
-    void resetPassword(String token, String newPassword);
 
-    // Email Verification
-    void verifyEmail(String token);
 }

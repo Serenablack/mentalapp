@@ -8,11 +8,7 @@ public class UserProfileResponse {
     private Long id;
     private String username;
     private String email;
-    private String firstName;
-    private String lastName;
-    private Boolean isEmailVerified;
-    private String oauthProvider;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastLoginAt;
-}
 
+    private Boolean isEmailVerified;
+    private LocalDateTime createdAt;
+}

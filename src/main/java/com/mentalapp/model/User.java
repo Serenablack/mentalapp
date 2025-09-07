@@ -1,6 +1,8 @@
 package com.mentalapp.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,7 +24,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Email
     @Column(name = "email", unique = true, nullable = false, length = 255)
     private String email;
 
@@ -32,46 +34,8 @@ public class User implements UserDetails {
     @Column(name = "password_hash", length = 255)
     private String passwordHash;
 
-    @Column(name = "first_name", length = 100)
-    private String firstName;
-
-    @Column(name = "last_name", length = 100)
-    private String lastName;
-
     @Column(name = "profile_picture_url", length = 500)
     private String profilePictureUrl;
-
-    @Column(name = "last_login_at")
-    private LocalDateTime lastLoginAt;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @Column(name = "email_verification_token", length = 255)
-    private String emailVerificationToken;
-
-    @Column(name = "email_verification_expires_at")
-    private LocalDateTime emailVerificationExpiresAt;
-
-    @Column(name = "password_reset_token", length = 255)
-    private String passwordResetToken;
-
-    @Column(name = "password_reset_expires_at")
-    private LocalDateTime passwordResetExpiresAt;
-
-    @Column(name = "failed_login_attempts", nullable = false)
-    private Integer failedLoginAttempts;
-
-    @Column(name = "account_locked_until")
-    private LocalDateTime accountLockedUntil;
-
-    @Column(name = "is_email_verified", nullable = false)
-    private Boolean isEmailVerified;
 
     @Column(name = "external_id", length = 255)
     private String externalId;
@@ -79,33 +43,34 @@ public class User implements UserDetails {
     @Column(name = "auth_provider", length = 50)
     private String authProvider;
 
-    public String getFullName() {
-        if (firstName != null && lastName != null) {
-            return firstName + " " + lastName;
-        } else if (firstName != null) {
-            return firstName;
-        } else if (lastName != null) {
-            return lastName;
-        }
-        return username;
-    }
+    // public String getFullName() {
+    // if (firstName != null && lastName != null) {
+    // return firstName + " " + lastName;
+    // } else if (firstName != null) {
+    // return firstName;
+    // } else if (lastName != null) {
+    // return lastName;
+    // }
+    // return username;
+    // }
 
-    public boolean isAccountLocked() {
-        return accountLockedUntil != null && accountLockedUntil.isAfter(LocalDateTime.now());
-    }
-
-    public void incrementFailedLoginAttempts() {
-        this.failedLoginAttempts++;
-    }
-
-    public void resetFailedLoginAttempts() {
-        this.failedLoginAttempts = 0;
-        this.accountLockedUntil = null;
-    }
-
-    public void lockAccount(int minutes) {
-        this.accountLockedUntil = LocalDateTime.now().plusMinutes(minutes);
-    }
+    // public boolean isAccountLocked() {
+    // return accountLockedUntil != null &&
+    // accountLockedUntil.isAfter(LocalDateTime.now());
+    // }
+    //
+    // public void incrementFailedLoginAttempts() {
+    // this.failedLoginAttempts++;
+    // }
+    //
+    // public void resetFailedLoginAttempts() {
+    // this.failedLoginAttempts = 0;
+    // this.accountLockedUntil = null;
+    // }
+    //
+    // public void lockAccount(int minutes) {
+    // this.accountLockedUntil = LocalDateTime.now().plusMinutes(minutes);
+    // }
 
     // UserDetails implementation
     @Override
@@ -123,11 +88,6 @@ public class User implements UserDetails {
     @Override
     public boolean isAccountNonExpired() {
         return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return !isAccountLocked();
     }
 
     @Override

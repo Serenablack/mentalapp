@@ -73,6 +73,14 @@ public class JwtUtil {
         return createToken(claims, userDetails.getUsername());
     }
 
+    // public String generateToken(com.mentalapp.model.User user) {
+    // Map<String, Object> claims = new HashMap<>();
+    // claims.put("email", user.getEmail());
+    // claims.put("username", user.getUsername());
+    // claims.put("userId", user.getId());
+    // return createToken(claims, user.getUsername());
+    // }
+
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -94,5 +102,3 @@ public class JwtUtil {
         }
     }
 }
-
-

@@ -24,16 +24,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // Try to find user by email first, then by username if not found
         User user = userRepository.findByEmail(usernameOrEmail)
-                                  .or(() -> userRepository.findByUsername(usernameOrEmail))
                                   .orElseThrow(() -> {
                                       log.warn("User not found with username/email: {}", usernameOrEmail);
                                       return new UsernameNotFoundException("User not found: " + usernameOrEmail);
                                   });
 
-        if (user.isAccountLocked()) {
-            log.warn("User account is locked: {}", usernameOrEmail);
-            throw new UsernameNotFoundException("User account is locked: " + usernameOrEmail);
-        }
+
 
         if (!user.isEnabled()) {
             log.warn("User account is disabled: {}", usernameOrEmail);
@@ -54,10 +50,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                                       return new UsernameNotFoundException("User not found with id: " + id);
                                   });
 
-        if (user.isAccountLocked()) {
-            log.warn("User account is locked for ID: {}", id);
-            throw new UsernameNotFoundException("User account is locked for id: " + id);
-        }
 
         if (!user.isEnabled()) {
             log.warn("User account is disabled for ID: {}", id);

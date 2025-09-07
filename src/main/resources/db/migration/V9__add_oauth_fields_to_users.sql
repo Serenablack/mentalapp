@@ -18,3 +18,6 @@ ALTER TABLE users RENAME COLUMN last_login TO last_login_at;
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_external_id ON users(external_id);
 CREATE INDEX IF NOT EXISTS idx_users_failed_login_attempts ON users(failed_login_attempts);
+
+
+
