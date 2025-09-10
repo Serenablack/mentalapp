@@ -12,15 +12,15 @@ import java.util.List;
 @Repository
 public interface MoodEntryRepository extends JpaRepository<MoodEntry, Long> {
 
-    @Query("SELECT m FROM MoodEntry m WHERE m.user.id = :userId AND m.entryDate >= :startOfDay AND m.entryDate < :endOfDay")
+    @Query("SELECT m FROM MoodEntry m WHERE m.user.id = :userId AND m.createdAt >= :startOfDay AND m.createdAt < :endOfDay")
     List<MoodEntry> findByUserIdAndDate(@Param("userId") Long userId, @Param("startOfDay") LocalDateTime startOfDay,
             @Param("endOfDay") LocalDateTime endOfDay);
 
-    @Query("SELECT COUNT(m) FROM MoodEntry m WHERE m.user.id = :userId AND m.entryDate >= :startOfDay AND m.entryDate < :endOfDay")
+    @Query("SELECT COUNT(m) FROM MoodEntry m WHERE m.user.id = :userId AND m.createdAt >= :startOfDay AND m.createdAt < :endOfDay")
     long countTodayEntriesByUserId(@Param("userId") Long userId, @Param("startOfDay") LocalDateTime startOfDay,
             @Param("endOfDay") LocalDateTime endOfDay);
 
-    @Query("SELECT m FROM MoodEntry m WHERE m.user.id = :userId AND m.entryDate >= :startDate AND m.entryDate < :endDate")
+    @Query("SELECT m FROM MoodEntry m WHERE m.user.id = :userId AND m.createdAt >= :startDate AND m.createdAt < :endDate")
     List<MoodEntry> findByUserIdAndDateRange(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
 }

@@ -140,9 +140,9 @@ public class MoodEntryServiceImpl implements MoodEntryService {
                 .filter(entry -> entry.getUser().getId().equals(user.getId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Mood entry not found"));
 
-        if (!moodEntry.isFromToday()) {
-            throw new IllegalStateException("Cannot update mood entries from previous days");
-        }
+//        if (!moodEntry.isFromToday()) {
+//            throw new IllegalStateException("Cannot update mood entries from previous days");
+//        }
 
         moodEntryMapper.updateEntity(moodEntry, request);
         moodEntryRepository.save(moodEntry);
@@ -157,9 +157,9 @@ public class MoodEntryServiceImpl implements MoodEntryService {
                 .filter(entry -> entry.getUser().getId().equals(user.getId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Mood entry not found"));
 
-        if (!moodEntry.isFromToday()) {
-            throw new IllegalStateException("Cannot delete mood entries from previous days");
-        }
+//        if (!moodEntry.isFromToday()) {
+//            throw new IllegalStateException("Cannot delete mood entries from previous days");
+//        }
 
         moodEntryRepository.delete(moodEntry);
         log.info("Deleted mood entry: {} for user: {}", id, user.getEmail());

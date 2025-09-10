@@ -7,6 +7,7 @@ import com.mentalapp.repository.UserRepository;
 import com.mentalapp.security.JwtUtil;
 import com.mentalapp.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -74,6 +76,8 @@ public class UserServiceImpl implements UserService {
         // Try to find user by email first, then by username if not found
         User user = userRepository.findByEmail(request.getUsernameOrEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        log.info(user.getEmail(), user.getUsername());
         String token = jwtUtil.generateToken(user);
 
         return ResponseEntity.ok(new AuthResponse(token));

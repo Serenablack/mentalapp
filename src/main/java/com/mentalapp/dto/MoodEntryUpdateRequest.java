@@ -31,7 +31,5 @@ public class MoodEntryUpdateRequest {
     @Size(min = 2, message = "At least two emotions must be selected")
     private Set<Long> emotionIds; // IDs of selected emotions
 
-    // Optional fields for future enhancement
-    private Boolean isVoiceInput = false;
-    private String voiceInputUrl;
+
 }

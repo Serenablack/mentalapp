@@ -13,19 +13,29 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Maps MoodEntry DTOs to and from the MoodEntry entity,
+ * assuming all date/time fields are handled as Instant.
+ */
 @Component
 public class MoodEntryMapper {
 
     @Autowired
     private EmotionRepository emotionRepository;
 
+    /**
+     * Converts a MoodEntryCreateRequest DTO to a MoodEntry entity.
+     * @param request The DTO containing mood entry data.
+     * @return A new MoodEntry entity.
+     */
     public MoodEntry toEntity(MoodEntryCreateRequest request) {
         if (request == null) {
             return null;
         }
 
         MoodEntry moodEntry = new MoodEntry();
-        moodEntry.setEntryDate(request.getEntryDate());
+
+
         moodEntry.setLocation(request.getLocation());
         moodEntry.setComfortEnvironment(request.getComfortEnvironment());
         moodEntry.setDescription(request.getDescription());
@@ -35,16 +45,21 @@ public class MoodEntryMapper {
         // Map emotions by IDs
         if (request.getEmotionIds() != null && !request.getEmotionIds().isEmpty()) {
             Set<Emotion> emotions = request.getEmotionIds().stream()
-                    .map(emotionRepository::findById)
-                    .filter(opt -> opt.isPresent())
-                    .map(opt -> opt.get())
-                    .collect(Collectors.toSet());
+                                           .map(emotionRepository::findById)
+                                           .filter(opt -> opt.isPresent())
+                                           .map(opt -> opt.get())
+                                           .collect(Collectors.toSet());
             moodEntry.setEmotions(emotions);
         }
 
         return moodEntry;
     }
 
+    /**
+     * Converts a MoodEntry entity to a MoodEntryResponse DTO.
+     * @param moodEntry The MoodEntry entity.
+     * @return A new MoodEntryResponse DTO.
+     */
     public MoodEntryResponse toResponse(MoodEntry moodEntry) {
         if (moodEntry == null) {
             return null;
@@ -54,33 +69,40 @@ public class MoodEntryMapper {
         response.setId(moodEntry.getId());
         response.setUserId(moodEntry.getUser() != null ? moodEntry.getUser().getId() : null);
         response.setUsername(moodEntry.getUser() != null ? moodEntry.getUser().getUsername() : null);
-        response.setEntryDate(moodEntry.getEntryDate());
+
+        // Instant fields are directly set on the response DTO, no conversion needed
+        response.setCreatedAt(moodEntry.getCreatedAt());
+        response.setUpdatedAt(moodEntry.getUpdatedAt());
+
         response.setLocation(moodEntry.getLocation());
         response.setComfortEnvironment(moodEntry.getComfortEnvironment());
         response.setDescription(moodEntry.getDescription());
         response.setEnergyLevel(moodEntry.getEnergyLevel());
         response.setPassion(moodEntry.getPassion());
-        response.setCreatedAt(moodEntry.getCreatedAt());
-        response.setUpdatedAt(moodEntry.getUpdatedAt());
-        response.setIsFromToday(moodEntry.isFromToday());
+//        response.setIsFromToday(moodEntry.isFromToday());
 
         // Map emotions
         if (moodEntry.getEmotions() != null) {
             response.setEmotions(moodEntry.getEmotions().stream()
-                    .map(this::mapEmotion)
-                    .collect(Collectors.toSet()));
+                                          .map(this::mapEmotion)
+                                          .collect(Collectors.toSet()));
         }
 
         // Map suggested activities
         if (moodEntry.getSuggestedActivities() != null) {
             response.setSuggestedActivities(moodEntry.getSuggestedActivities().stream()
-                    .map(this::mapActivity)
-                    .collect(Collectors.toSet()));
+                                                     .map(this::mapActivity)
+                                                     .collect(Collectors.toSet()));
         }
 
         return response;
     }
 
+    /**
+     * Updates a MoodEntry entity with data from a MoodEntryUpdateRequest DTO.
+     * @param entity The MoodEntry entity to update.
+     * @param request The DTO containing the update data.
+     */
     public void updateEntity(MoodEntry entity, MoodEntryUpdateRequest request) {
         if (request == null || entity == null) {
             return;
@@ -105,10 +127,10 @@ public class MoodEntryMapper {
         // Update emotions if provided
         if (request.getEmotionIds() != null) {
             Set<Emotion> emotions = request.getEmotionIds().stream()
-                    .map(emotionRepository::findById)
-                    .filter(opt -> opt.isPresent())
-                    .map(opt -> opt.get())
-                    .collect(Collectors.toSet());
+                                           .map(emotionRepository::findById)
+                                           .filter(opt -> opt.isPresent())
+                                           .map(opt -> opt.get())
+                                           .collect(Collectors.toSet());
             entity.setEmotions(emotions);
         }
     }
@@ -139,9 +161,13 @@ public class MoodEntryMapper {
         response.setDifficultyLevel(activity.getDifficultyLevel());
         response.setPriorityLevel(activity.getPriorityLevel());
         response.setIsCompleted(activity.getIsCompleted());
+
+        // Instant fields are directly set on the response DTO, no conversion needed
         response.setCompletedAt(activity.getCompletedAt());
-        response.setStatus(activity.getStatus());
         response.setCreatedAt(activity.getCreatedAt());
+
+        response.setStatus(activity.getStatus());
+
         return response;
     }
 }

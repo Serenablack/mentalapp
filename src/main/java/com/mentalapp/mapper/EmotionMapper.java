@@ -23,8 +23,8 @@ public class EmotionMapper {
         response.setKey(emotion.getKey());
         response.setLabel(emotion.getLabel());
         response.setParentKey(emotion.getParent() != null ? emotion.getParent().getKey() : null);
-        response.setCreatedAt(emotion.getCreatedAt());
-        response.setUpdatedAt(emotion.getUpdatedAt());
+//        response.setCreatedAt(emotion.getCreatedAt());
+//        response.setUpdatedAt(emotion.getUpdatedAt());
         // Note: children will be handled separately in service
         return response;
     }

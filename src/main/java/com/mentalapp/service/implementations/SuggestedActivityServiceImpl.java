@@ -12,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,28 +28,30 @@ public class SuggestedActivityServiceImpl implements SuggestedActivityService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SuggestedActivityResponse> getActivitiesByDate(User user, LocalDateTime date) {
-        LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
-        LocalDateTime endOfDay = startOfDay.plusDays(1);
+    public List<SuggestedActivityResponse> getActivitiesByDate(User user, Instant date) {
+        // Truncate the Instant to the start of the day in UTC for a consistent date range
+        Instant startOfDay = date.truncatedTo(ChronoUnit.DAYS);
+        Instant endOfDay = startOfDay.plus(1, ChronoUnit.DAYS);
 
         return suggestedActivityRepository.findByUserIdAndDate(user.getId(), startOfDay, endOfDay)
-                .stream()
-                .map(suggestedActivityMapper::toResponse)
-                .collect(Collectors.toList());
+                                          .stream()
+                                          .map(suggestedActivityMapper::toResponse)
+                                          .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SuggestedActivityResponse> getTodaysActivities(User user) {
-        return getActivitiesByDate(user, LocalDateTime.now());
+        // Use Instant.now() to get the current time
+        return getActivitiesByDate(user, Instant.now());
     }
 
     @Override
     @Transactional(readOnly = true)
     public SuggestedActivityResponse getActivityById(Long activityId, User user) {
         SuggestedActivity activity = suggestedActivityRepository.findById(activityId)
-                .filter(a -> a.getMoodEntry().getUser().getId().equals(user.getId()))
-                .orElseThrow(() -> new ResourceNotFoundException("Activity not found"));
+                                                                .filter(a -> a.getMoodEntry().getUser().getId().equals(user.getId()))
+                                                                .orElseThrow(() -> new ResourceNotFoundException("Activity not found"));
 
         return suggestedActivityMapper.toResponse(activity);
     }
@@ -80,16 +84,15 @@ public class SuggestedActivityServiceImpl implements SuggestedActivityService {
         SuggestedActivity activity = getActivityEntity(activityId, user);
 
         // Check if activity is completed
-        if (activity.getIsCompleted()) {
+        if (Boolean.TRUE.equals(activity.getIsCompleted())) {
             throw new IllegalStateException("Cannot delete completed activities");
         }
 
-        // Check if activity is from previous days (can only delete same day or future
-        // activities)
-        LocalDateTime activityDate = activity.getMoodEntry().getCreatedAt();
-        LocalDateTime today = LocalDateTime.now();
+        // Check if activity is from a previous day
+        Instant activityDate = activity.getCreatedAt().toInstant(ZoneOffset.UTC);
+        Instant startOfToday = Instant.now().truncatedTo(ChronoUnit.DAYS);
 
-        if (activityDate.toLocalDate().isBefore(today.toLocalDate())) {
+        if (activityDate.isBefore(startOfToday)) {
             throw new IllegalStateException("Cannot delete activities from previous days");
         }
 
@@ -99,7 +102,7 @@ public class SuggestedActivityServiceImpl implements SuggestedActivityService {
 
     private SuggestedActivity getActivityEntity(Long activityId, User user) {
         return suggestedActivityRepository.findById(activityId)
-                .filter(activity -> activity.getMoodEntry().getUser().getId().equals(user.getId()))
-                .orElseThrow(() -> new ResourceNotFoundException("Activity not found"));
+                                          .filter(activity -> activity.getMoodEntry().getUser().getId().equals(user.getId()))
+                                          .orElseThrow(() -> new ResourceNotFoundException("Activity not found"));
     }
 }

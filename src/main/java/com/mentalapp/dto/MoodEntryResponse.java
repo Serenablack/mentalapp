@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ public class MoodEntryResponse {
     private Long id;
     private Long userId;
     private String username;
-    private LocalDateTime entryDate;
+//    private Instant entryDate;
     private String location;
     private String comfortEnvironment;
     private String description;
@@ -23,8 +24,8 @@ public class MoodEntryResponse {
     private String passion;
     private Set<EmotionResponse> emotions;
     private Set<SuggestedActivityResponse> suggestedActivities;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private Boolean isFromToday;
 
     @Data

@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,8 +26,8 @@ public class MoodEntry {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "entry_date", nullable = false)
-    private LocalDateTime entryDate;
+//    @Column(name = "entry_date", nullable = false)
+//    private Instant entryDate;
 
     @Column(name = "location", length = 255)
     private String location;
@@ -51,11 +53,11 @@ public class MoodEntry {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     public void addEmotion(Emotion emotion) {
         this.emotions.add(emotion);
@@ -75,8 +77,10 @@ public class MoodEntry {
         activity.setMoodEntry(null);
     }
 
-    public boolean isFromToday() {
-        LocalDateTime now = LocalDateTime.now();
-        return this.entryDate.toLocalDate().equals(now.toLocalDate());
-    }
+//    public boolean isFromToday() {
+//        Instant now = Instant.now();
+//        LocalDate entryLocalDate = this.entryDate.atOffset(ZoneOffset.UTC).toLocalDate();
+//        LocalDate todayLocalDate = now.atOffset(ZoneOffset.UTC).toLocalDate();
+//        return entryLocalDate.equals(todayLocalDate);
+//    }
 }

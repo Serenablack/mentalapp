@@ -5,13 +5,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
 public class MoodEntryCreateRequest {
-    @NotNull(message = "Entry date is required")
-    private LocalDateTime entryDate;
+//    @NotNull(message = "Entry date is required")
+//    private Instant entryDate;
 
     private String location;
 
