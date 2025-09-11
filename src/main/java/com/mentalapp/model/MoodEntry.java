@@ -2,7 +2,9 @@ package com.mentalapp.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,6 +18,8 @@ import java.util.Set;
 @Table(name = "mood_entries")
 @Data
 @NoArgsConstructor
+@ToString(exclude = {"user", "emotions", "suggestedActivities"}) // avoid recursion in logs
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // only use fields we mark
 public class MoodEntry {
 
     @Id

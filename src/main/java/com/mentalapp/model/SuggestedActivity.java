@@ -1,9 +1,7 @@
 package com.mentalapp.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,6 +12,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "moodEntry") // prevent recursion in logs
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // safe equals/hashCode
 public class SuggestedActivity {
 
     @Id

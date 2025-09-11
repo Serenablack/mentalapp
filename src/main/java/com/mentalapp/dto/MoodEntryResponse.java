@@ -28,29 +28,6 @@ public class MoodEntryResponse {
     private Instant updatedAt;
     private Boolean isFromToday;
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class EmotionResponse {
-        private Long id;
-        private String key;
-        private String label;
-        private String parentKey;
-    }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class SuggestedActivityResponse {
-        private Long id;
-        private String activityDescription;
-        private Boolean isCompleted;
-        private LocalDateTime completedAt;
-        private String activityType;
-        private Integer estimatedDurationMinutes;
-        private Integer difficultyLevel;
-        private Integer priorityLevel;
-        private String status;
-        private LocalDateTime createdAt;
-    }
+
 }
