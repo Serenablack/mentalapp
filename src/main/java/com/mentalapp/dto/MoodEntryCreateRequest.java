@@ -5,14 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
 public class MoodEntryCreateRequest {
-//    @NotNull(message = "Entry date is required")
-//    private Instant entryDate;
+    // @NotNull(message = "Entry date is required")
+    // private Instant entryDate;
 
     private String location;
 
@@ -30,4 +28,3 @@ public class MoodEntryCreateRequest {
     @NotNull(message = "At least one emotion must be selected")
     private Set<Long> emotionIds;
 }
-

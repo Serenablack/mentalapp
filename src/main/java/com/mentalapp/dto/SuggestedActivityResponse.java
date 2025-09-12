@@ -1,7 +1,7 @@
 package com.mentalapp.dto;
 
 import lombok.Data;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 public class SuggestedActivityResponse {
@@ -12,8 +12,7 @@ public class SuggestedActivityResponse {
     private Integer difficultyLevel;
     private Integer priorityLevel;
     private Boolean isCompleted;
-    private LocalDateTime completedAt;
+    private Instant completedAt;
     private String status;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }
-

@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -39,7 +39,7 @@ public class MoodEntryController {
 
     @GetMapping
     public ResponseEntity<List<MoodEntryResponse>> getMoodEntriesByDate(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX") Instant date,
             @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(moodEntryService.getMoodEntriesByDate(user, date));
     }

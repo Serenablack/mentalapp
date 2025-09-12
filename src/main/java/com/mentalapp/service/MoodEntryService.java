@@ -6,8 +6,8 @@ import com.mentalapp.dto.MoodEntryResponse;
 import com.mentalapp.dto.MoodEntryUpdateRequest;
 import com.mentalapp.dto.DailyMoodSummaryDto;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MoodEntryService {
@@ -17,7 +17,7 @@ public interface MoodEntryService {
 
     MoodEntryResponse getMoodEntryById(Long id, User user);
 
-    List<MoodEntryResponse> getMoodEntriesByDate(User user, LocalDateTime date);
+    List<MoodEntryResponse> getMoodEntriesByDate(User user, Instant date);
 
     void updateMoodEntry(Long id, MoodEntryUpdateRequest request, User user);
 

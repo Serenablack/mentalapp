@@ -16,8 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +45,7 @@ public class MoodEntryServiceImpl implements MoodEntryService {
         // Generate and save AI suggestions
         try {
             moodEntry.setSuggestedActivities(new HashSet<>(aiActivitySuggestionService.generateSuggestions(moodEntry)));
-            moodEntry = moodEntryRepository.save(moodEntry);
+            // moodEntry = moodEntryRepository.save(moodEntry);
             log.info("Generated {} AI suggestions for mood entry: {}",
                     moodEntry.getSuggestedActivities().size(), moodEntry.getId());
         } catch (Exception e) {
@@ -67,9 +68,11 @@ public class MoodEntryServiceImpl implements MoodEntryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MoodEntryResponse> getMoodEntriesByDate(User user, LocalDateTime date) {
-        LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
-        LocalDateTime endOfDay = startOfDay.plusDays(1);
+    public List<MoodEntryResponse> getMoodEntriesByDate(User user, Instant date) {
+        // Convert Instant to day boundaries in UTC
+        Instant startOfDay = date.atOffset(ZoneOffset.UTC).toLocalDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+        Instant endOfDay = startOfDay.atOffset(ZoneOffset.UTC).toLocalDate().plusDays(1).atStartOfDay()
+                .toInstant(ZoneOffset.UTC);
 
         return moodEntryRepository.findByUserIdAndDate(user.getId(), startOfDay, endOfDay)
                 .stream()
@@ -80,7 +83,7 @@ public class MoodEntryServiceImpl implements MoodEntryService {
     @Override
     @Transactional(readOnly = true)
     public MoodEntryResponse getTodaysMoodEntry(User user) {
-        LocalDateTime today = LocalDateTime.now();
+        Instant today = Instant.now();
         List<MoodEntryResponse> todaysEntries = getMoodEntriesByDate(user, today);
 
         if (todaysEntries.isEmpty()) {
@@ -94,8 +97,9 @@ public class MoodEntryServiceImpl implements MoodEntryService {
     @Override
     @Transactional(readOnly = true)
     public List<MoodEntryResponse> getMoodHistory(User user, LocalDate startDate, LocalDate endDate) {
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+        // Convert LocalDate to Instant boundaries in UTC
+        Instant startDateTime = startDate.atStartOfDay().toInstant(ZoneOffset.UTC);
+        Instant endDateTime = endDate.plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC);
 
         return moodEntryRepository.findByUserIdAndDateRange(user.getId(), startDateTime, endDateTime)
                 .stream()
@@ -106,8 +110,9 @@ public class MoodEntryServiceImpl implements MoodEntryService {
     @Override
     @Transactional(readOnly = true)
     public DailyMoodSummaryDto getDailyMoodSummary(User user, LocalDate date) {
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        // Convert LocalDate to Instant boundaries in UTC
+        Instant startOfDay = date.atStartOfDay().toInstant(ZoneOffset.UTC);
+        Instant endOfDay = date.plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC);
 
         List<MoodEntry> entries = moodEntryRepository.findByUserIdAndDate(user.getId(), startOfDay, endOfDay);
 
@@ -140,9 +145,10 @@ public class MoodEntryServiceImpl implements MoodEntryService {
                 .filter(entry -> entry.getUser().getId().equals(user.getId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Mood entry not found"));
 
-//        if (!moodEntry.isFromToday()) {
-//            throw new IllegalStateException("Cannot update mood entries from previous days");
-//        }
+        // if (!moodEntry.isFromToday()) {
+        // throw new IllegalStateException("Cannot update mood entries from previous
+        // days");
+        // }
 
         moodEntryMapper.updateEntity(moodEntry, request);
         moodEntryRepository.save(moodEntry);
@@ -157,9 +163,10 @@ public class MoodEntryServiceImpl implements MoodEntryService {
                 .filter(entry -> entry.getUser().getId().equals(user.getId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Mood entry not found"));
 
-//        if (!moodEntry.isFromToday()) {
-//            throw new IllegalStateException("Cannot delete mood entries from previous days");
-//        }
+        // if (!moodEntry.isFromToday()) {
+        // throw new IllegalStateException("Cannot delete mood entries from previous
+        // days");
+        // }
 
         moodEntryRepository.delete(moodEntry);
         log.info("Deleted mood entry: {} for user: {}", id, user.getEmail());

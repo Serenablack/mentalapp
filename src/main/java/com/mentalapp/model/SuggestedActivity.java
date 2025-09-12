@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "suggested_activities")
@@ -31,7 +31,7 @@ public class SuggestedActivity {
     private Boolean isCompleted = false;
 
     @Column(name = "completed_at")
-    private LocalDateTime completedAt;
+    private Instant completedAt;
 
     @Column(name = "activity_type", length = 100)
     private String activityType;
@@ -47,15 +47,15 @@ public class SuggestedActivity {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     public void markAsCompleted() {
         this.isCompleted = true;
-        this.completedAt = LocalDateTime.now();
+        this.completedAt = Instant.now();
     }
 
     public void markAsIncomplete() {

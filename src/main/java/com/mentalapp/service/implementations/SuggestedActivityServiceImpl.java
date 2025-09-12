@@ -89,7 +89,7 @@ public class SuggestedActivityServiceImpl implements SuggestedActivityService {
         }
 
         // Check if activity is from a previous day
-        Instant activityDate = activity.getCreatedAt().toInstant(ZoneOffset.UTC);
+        Instant activityDate = activity.getCreatedAt();
         Instant startOfToday = Instant.now().truncatedTo(ChronoUnit.DAYS);
 
         if (activityDate.isBefore(startOfToday)) {

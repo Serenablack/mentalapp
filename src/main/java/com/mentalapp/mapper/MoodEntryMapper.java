@@ -25,7 +25,7 @@ public class MoodEntryMapper {
         }
 
         MoodEntry moodEntry = new MoodEntry();
-        moodEntry.setEntryDate(request.getEntryDate());
+//        moodEntry.setEntryDate(request.getEntryDate());
         moodEntry.setLocation(request.getLocation());
         moodEntry.setComfortEnvironment(request.getComfortEnvironment());
         moodEntry.setDescription(request.getDescription());
@@ -54,7 +54,7 @@ public class MoodEntryMapper {
         response.setId(moodEntry.getId());
         response.setUserId(moodEntry.getUser() != null ? moodEntry.getUser().getId() : null);
         response.setUsername(moodEntry.getUser() != null ? moodEntry.getUser().getUsername() : null);
-        response.setEntryDate(moodEntry.getEntryDate());
+//        response.setEntryDate(moodEntry.getEntryDate());
         response.setLocation(moodEntry.getLocation());
         response.setComfortEnvironment(moodEntry.getComfortEnvironment());
         response.setDescription(moodEntry.getDescription());
@@ -62,7 +62,7 @@ public class MoodEntryMapper {
         response.setPassion(moodEntry.getPassion());
         response.setCreatedAt(moodEntry.getCreatedAt());
         response.setUpdatedAt(moodEntry.getUpdatedAt());
-        response.setIsFromToday(moodEntry.isFromToday());
+//        response.setIsFromToday(moodEntry.isFromToday());
 
         // Map emotions
         if (moodEntry.getEmotions() != null) {

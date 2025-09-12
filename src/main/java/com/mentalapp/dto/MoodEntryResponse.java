@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -16,7 +15,7 @@ public class MoodEntryResponse {
     private Long id;
     private Long userId;
     private String username;
-//    private Instant entryDate;
+    // private Instant entryDate;
     private String location;
     private String comfortEnvironment;
     private String description;
@@ -28,6 +27,30 @@ public class MoodEntryResponse {
     private Instant updatedAt;
     private Boolean isFromToday;
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmotionResponse {
+        private Long id;
+        private String key;
+        private String label;
+        private String parentKey;
+    }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SuggestedActivityResponse {
+        private Long id;
+        private String activityDescription;
+        private Boolean isCompleted;
+        private Instant completedAt;
+        private String activityType;
+        private Integer estimatedDurationMinutes;
+        private Integer difficultyLevel;
+        private Integer priorityLevel;
+        private String status;
+        private Instant createdAt;
+    }
 
 }
