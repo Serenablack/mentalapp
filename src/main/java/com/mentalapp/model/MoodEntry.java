@@ -18,7 +18,7 @@ import java.util.Set;
 @Table(name = "mood_entries")
 @Data
 @NoArgsConstructor
-@ToString(exclude = {"user", "emotions", "suggestedActivities"}) // avoid recursion in logs
+@ToString(exclude = { "user", "emotions", "suggestedActivities" }) // avoid recursion in logs
 @EqualsAndHashCode(onlyExplicitlyIncluded = true) // only use fields we mark
 public class MoodEntry {
 
@@ -30,8 +30,8 @@ public class MoodEntry {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-//    @Column(name = "entry_date", nullable = false)
-//    private Instant entryDate;
+    // @Column(name = "entry_date", nullable = false)
+    // private Instant entryDate;
 
     @Column(name = "location", length = 255)
     private String location;
@@ -81,10 +81,11 @@ public class MoodEntry {
         activity.setMoodEntry(null);
     }
 
-//    public boolean isFromToday() {
-//        Instant now = Instant.now();
-//        LocalDate entryLocalDate = this.entryDate.atOffset(ZoneOffset.UTC).toLocalDate();
-//        LocalDate todayLocalDate = now.atOffset(ZoneOffset.UTC).toLocalDate();
-//        return entryLocalDate.equals(todayLocalDate);
-//    }
+    // public boolean isFromToday() {
+    // Instant now = Instant.now();
+    // LocalDate entryLocalDate =
+    // this.entryDate.atOffset(ZoneOffset.UTC).toLocalDate();
+    // LocalDate todayLocalDate = now.atOffset(ZoneOffset.UTC).toLocalDate();
+    // return entryLocalDate.equals(todayLocalDate);
+    // }
 }
