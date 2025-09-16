@@ -25,7 +25,7 @@ public class MoodEntryMapper {
         }
 
         MoodEntry moodEntry = new MoodEntry();
-//        moodEntry.setEntryDate(request.getEntryDate());
+        // moodEntry.setEntryDate(request.getEntryDate());
         moodEntry.setLocation(request.getLocation());
         moodEntry.setComfortEnvironment(request.getComfortEnvironment());
         moodEntry.setDescription(request.getDescription());
@@ -35,10 +35,10 @@ public class MoodEntryMapper {
         // Map emotions by IDs
         if (request.getEmotionIds() != null && !request.getEmotionIds().isEmpty()) {
             Set<Emotion> emotions = request.getEmotionIds().stream()
-                                           .map(emotionRepository::findById)
-                                           .filter(opt -> opt.isPresent())
-                                           .map(opt -> opt.get())
-                                           .collect(Collectors.toSet());
+                    .map(emotionRepository::findById)
+                    .filter(opt -> opt.isPresent())
+                    .map(opt -> opt.get())
+                    .collect(Collectors.toSet());
             moodEntry.setEmotions(emotions);
         }
 
@@ -54,7 +54,7 @@ public class MoodEntryMapper {
         response.setId(moodEntry.getId());
         response.setUserId(moodEntry.getUser() != null ? moodEntry.getUser().getId() : null);
         response.setUsername(moodEntry.getUser() != null ? moodEntry.getUser().getUsername() : null);
-//        response.setEntryDate(moodEntry.getEntryDate());
+        // response.setEntryDate(moodEntry.getEntryDate());
         response.setLocation(moodEntry.getLocation());
         response.setComfortEnvironment(moodEntry.getComfortEnvironment());
         response.setDescription(moodEntry.getDescription());
@@ -62,20 +62,20 @@ public class MoodEntryMapper {
         response.setPassion(moodEntry.getPassion());
         response.setCreatedAt(moodEntry.getCreatedAt());
         response.setUpdatedAt(moodEntry.getUpdatedAt());
-//        response.setIsFromToday(moodEntry.isFromToday());
+        // response.setIsFromToday(moodEntry.isFromToday());
 
         // Map emotions
         if (moodEntry.getEmotions() != null) {
             response.setEmotions(moodEntry.getEmotions().stream()
-                                          .map(this::mapEmotion)
-                                          .collect(Collectors.toSet()));
+                    .map(this::mapEmotion)
+                    .collect(Collectors.toSet()));
         }
 
         // Map suggested activities
         if (moodEntry.getSuggestedActivities() != null) {
             response.setSuggestedActivities(moodEntry.getSuggestedActivities().stream()
-                                                     .map(this::mapActivity)
-                                                     .collect(Collectors.toSet()));
+                    .map(this::mapActivity)
+                    .collect(Collectors.toSet()));
         }
 
         return response;
@@ -105,10 +105,10 @@ public class MoodEntryMapper {
         // Update emotions if provided
         if (request.getEmotionIds() != null) {
             Set<Emotion> emotions = request.getEmotionIds().stream()
-                                           .map(emotionRepository::findById)
-                                           .filter(opt -> opt.isPresent())
-                                           .map(opt -> opt.get())
-                                           .collect(Collectors.toSet());
+                    .map(emotionRepository::findById)
+                    .filter(opt -> opt.isPresent())
+                    .map(opt -> opt.get())
+                    .collect(Collectors.toSet());
             entity.setEmotions(emotions);
         }
     }
@@ -134,13 +134,7 @@ public class MoodEntryMapper {
         MoodEntryResponse.SuggestedActivityResponse response = new MoodEntryResponse.SuggestedActivityResponse();
         response.setId(activity.getId());
         response.setActivityDescription(activity.getActivityDescription());
-        response.setActivityType(activity.getActivityType());
-        response.setEstimatedDurationMinutes(activity.getEstimatedDurationMinutes());
-        response.setDifficultyLevel(activity.getDifficultyLevel());
-        response.setPriorityLevel(activity.getPriorityLevel());
         response.setIsCompleted(activity.getIsCompleted());
-        response.setCompletedAt(activity.getCompletedAt());
-        response.setStatus(activity.getStatus());
         response.setCreatedAt(activity.getCreatedAt());
         return response;
     }

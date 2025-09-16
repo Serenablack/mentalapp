@@ -18,13 +18,7 @@ public class SuggestedActivityMapper {
         SuggestedActivityResponse response = new SuggestedActivityResponse();
         response.setId(activity.getId());
         response.setActivityDescription(activity.getActivityDescription());
-        response.setActivityType(activity.getActivityType());
-        response.setEstimatedDurationMinutes(activity.getEstimatedDurationMinutes());
-        response.setDifficultyLevel(activity.getDifficultyLevel());
-        response.setPriorityLevel(activity.getPriorityLevel());
         response.setIsCompleted(activity.getIsCompleted());
-        response.setCompletedAt(activity.getCompletedAt());
-        response.setStatus(activity.getStatus());
         response.setCreatedAt(activity.getCreatedAt());
         return response;
     }

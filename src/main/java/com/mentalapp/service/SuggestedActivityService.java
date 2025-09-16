@@ -4,7 +4,6 @@ import com.mentalapp.model.User;
 import com.mentalapp.dto.SuggestedActivityResponse;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SuggestedActivityService {

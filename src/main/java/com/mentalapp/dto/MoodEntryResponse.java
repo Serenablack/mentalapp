@@ -44,12 +44,6 @@ public class MoodEntryResponse {
         private Long id;
         private String activityDescription;
         private Boolean isCompleted;
-        private Instant completedAt;
-        private String activityType;
-        private Integer estimatedDurationMinutes;
-        private Integer difficultyLevel;
-        private Integer priorityLevel;
-        private String status;
         private Instant createdAt;
     }
 

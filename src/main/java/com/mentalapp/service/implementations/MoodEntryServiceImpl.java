@@ -2,6 +2,7 @@ package com.mentalapp.service.implementations;
 
 import com.mentalapp.exception.ResourceNotFoundException;
 import com.mentalapp.model.MoodEntry;
+import com.mentalapp.model.SuggestedActivity;
 import com.mentalapp.model.User;
 import com.mentalapp.dto.MoodEntryCreateRequest;
 import com.mentalapp.dto.MoodEntryResponse;
@@ -9,6 +10,7 @@ import com.mentalapp.dto.MoodEntryUpdateRequest;
 import com.mentalapp.dto.DailyMoodSummaryDto;
 import com.mentalapp.mapper.MoodEntryMapper;
 import com.mentalapp.repository.MoodEntryRepository;
+import com.mentalapp.repository.SuggestedActivityRepository;
 import com.mentalapp.service.AIActivitySuggestionService;
 import com.mentalapp.service.MoodEntryService;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 public class MoodEntryServiceImpl implements MoodEntryService {
 
     private final MoodEntryRepository moodEntryRepository;
+    private final SuggestedActivityRepository suggestedActivityRepository;
     private final MoodEntryMapper moodEntryMapper;
     private final AIActivitySuggestionService aiActivitySuggestionService;
 
@@ -44,16 +47,33 @@ public class MoodEntryServiceImpl implements MoodEntryService {
 
         // Generate and save AI suggestions
         try {
-            moodEntry.setSuggestedActivities(new HashSet<>(aiActivitySuggestionService.generateSuggestions(moodEntry)));
-            // moodEntry = moodEntryRepository.save(moodEntry);
-            log.info("Generated {} AI suggestions for mood entry: {}",
-                    moodEntry.getSuggestedActivities().size(), moodEntry.getId());
+            aiActivitySuggestionService.generateSuggestions(moodEntry);
+            log.info("Generated AI suggestions for mood entry: {}", moodEntry.getId());
         } catch (Exception e) {
             log.error("Failed to generate AI suggestions for mood entry: {}", moodEntry.getId(), e);
             // Continue without AI suggestions if they fail
         }
 
-        return moodEntryMapper.toResponse(moodEntry);
+        // Create response and manually fetch suggested activities via repository
+        MoodEntryResponse response = moodEntryMapper.toResponse(moodEntry);
+
+        // Fetch suggested activities for this mood entry directly from repository
+        List<SuggestedActivity> activities = suggestedActivityRepository.findByMoodEntryId(moodEntry.getId());
+        if (!activities.isEmpty()) {
+            Set<MoodEntryResponse.SuggestedActivityResponse> activityResponses = activities.stream()
+                    .map(activity -> {
+                        MoodEntryResponse.SuggestedActivityResponse activityResponse = new MoodEntryResponse.SuggestedActivityResponse();
+                        activityResponse.setId(activity.getId());
+                        activityResponse.setActivityDescription(activity.getActivityDescription());
+                        activityResponse.setIsCompleted(activity.getIsCompleted());
+                        activityResponse.setCreatedAt(activity.getCreatedAt());
+                        return activityResponse;
+                    })
+                    .collect(Collectors.toSet());
+            response.setSuggestedActivities(activityResponses);
+        }
+
+        return response;
     }
 
     @Override

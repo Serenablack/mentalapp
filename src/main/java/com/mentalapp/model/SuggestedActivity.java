@@ -30,21 +30,6 @@ public class SuggestedActivity {
     @Column(name = "is_completed", nullable = false)
     private Boolean isCompleted = false;
 
-    @Column(name = "completed_at")
-    private Instant completedAt;
-
-    @Column(name = "activity_type", length = 100)
-    private String activityType;
-
-    @Column(name = "estimated_duration_minutes")
-    private Integer estimatedDurationMinutes;
-
-    @Column(name = "difficulty_level")
-    private Integer difficultyLevel;
-
-    @Column(name = "priority_level")
-    private Integer priorityLevel;
-
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -55,19 +40,9 @@ public class SuggestedActivity {
 
     public void markAsCompleted() {
         this.isCompleted = true;
-        this.completedAt = Instant.now();
     }
 
     public void markAsIncomplete() {
         this.isCompleted = false;
-        this.completedAt = null;
-    }
-
-    public String getStatus() {
-        if (this.isCompleted) {
-            return "completed";
-        } else {
-            return "pending";
-        }
     }
 }
